@@ -3,30 +3,34 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Food Truck Name</title>
+  <title>Taste of Turkiye</title>
   <style>
     body, html { margin: 0; padding: 0; font-family: Arial, sans-serif; }
-    .image-header {
-      position: relative;
-      overflow: hidden;
-      height: 80vh;
-      background: url('assets/header-image.jpg') center/cover no-repeat;
+    .video-header { position: relative; overflow: hidden; height: 80vh; }
+    .video-header video {
+      position: absolute;
+      top: 50%; left: 50%;
+      min-width: 100%; min-height: 100%;
+      width: auto; height: auto;
+      transform: translate(-50%, -50%);
+      z-index: 1;
+      outline: 3px solid red !important;
     }
-    .image-header .overlay {
+    .video-header .overlay {
       position: absolute;
       top: 0; left: 0;
       width: 100%; height: 100%;
-      background: rgba(255, 255, 255, 0.5);
+      background: rgba(255, 255, 255, 0.2);
       z-index: 2;
     }
-    .image-header .header-content {
+    .video-header .header-content {
       position: absolute;
       top: 50%; left: 50%;
       transform: translate(-50%, -50%);
       z-index: 3;
       text-align: center;
     }
-    .image-header .header-content h1 {
+    .video-header .header-content h1 {
       font-size: 3rem;
       color: #333;
       margin: 0;
@@ -50,17 +54,23 @@
   </style>
 </head>
 <body>
-  <div class="image-header">
+  <div class="video-header">
+    <video autoplay muted loop>
+      <source src="assets/header-video.mp4" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
     <div class="overlay"></div>
     <div class="header-content">
-      <h1>Delicious Eats Food Truck</h1>
+      <h1>Taste of Turkiye</h1>
+      <h2>Turkish Food Truck Serving Naples, FL and Collier County, FL</h2>
     </div>
   </div>
 
   <div class="section" id="schedule">
     <h2>Our Schedule</h2>
-    <p>Find us at these locations this week:</p>
-    <iframe src="https://docs.google.com/spreadsheets/d/e/YOUR_SHEET_ID/pubhtml?gid=0&amp;single=true&amp;widget=true&amp;headers=false"></iframe>
+    <p>Find us at these locations:</p>
+    <!-- Embed Google Sheets or calendar -->
+    <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTdMqZPmukxvZTx-hCz-0aMQB5Ul86uOzDoABhTZl1zZXoWqgUrTNpUYRFZ5rn0XSKESsEXGAhNFzY-/pubhtml?gid=1188893810&single=true&doc-title=hidden&rm=minimal&chrome=false&headers=false&widget=false&single=true"></iframe>
   </div>
 
   <div class="section" id="menu">
