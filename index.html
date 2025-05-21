@@ -1,111 +1,224 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <link rel="icon" href='assets/favicon.png'>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Taste of Türkiye</title>
+  <title>Taste of Türkiye Food Truck</title>
+  <link rel="icon" href="/assets/favicon.png">
   <style>
-    body, html { margin: 0; padding: 0; font-family: Arial, sans-serif; }
-    .video-header { position: relative; overflow: hidden; height: 80vh; }
-    .video-header video {
-      position: absolute;
-      top: 50%; left: 50%;
-      min-width: 100%; min-height: 100%;
-      width: auto; height: auto;
-      transform: translate(-50%, -50%);
-      z-index: 1;
-      outline: 3px solid red !important;
+    :root {
+      --primary: #e67e22;
+      --secondary: #16a085;
+      --light: #ffffff;
+      --dark-overlay: rgba(0, 0, 0, 0.4);
     }
-    .video-header .overlay {
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(255, 255, 255, 0.2);
-      z-index: 2;
-    }
-    .video-header .header-content {
-      position: absolute;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      z-index: 3;
-      text-align: center;
-    }
-    .video-header .header-content h1 {
-      font-size: 3rem;
-      color: #333;
+    * { box-sizing: border-box; }
+    body, html {
       margin: 0;
-    }
-    .image-header {
-      position: relative;
-      overflow: hidden;
-      height: 80vh;
-      background: url('assets/header-image.png') center/cover no-repeat;
-    }
-    .image-header .overlay {
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(255, 255, 255, 0.5);
-      z-index: 2;
-    }
-    .image-header .header-content {
-      position: absolute;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      z-index: 3;
-      text-align: center;
-    }
-    .image-header .header-content h1 {
-      font-size: 3rem;
+      padding: 0;
+      font-family: Arial, sans-serif;
       color: #333;
-      margin: 0;
     }
-    .section { padding: 60px 20px; max-width: 800px; margin: auto; }
-    #schedule iframe { width: 100%; height: 400px; border: none; }
-    .menu-item {
+    nav {
+      position: absolute;
+      top: 0;
+      width: 100%;
       display: flex;
-      justify-content: space-between;
-      margin-bottom: 15px;
+      justify-content: center;
+      gap: 2rem;
+      padding: 1rem 0;
+      background: var(--dark-overlay);
+      z-index: 10;
+    }
+    nav a {
+      color: var(--light);
+      text-decoration: none;
+      font-weight: bold;
+      transition: opacity .3s;
+    }
+    nav a:hover { opacity: .7; }
+    header {
+      position: relative;
+      height: 80vh;
+      background: url('/assets/header-image.jpg') center/cover no-repeat;
+    }
+    header .overlay {
+      position: absolute;
+      inset: 0;
+      background: var(--dark-overlay);
+      z-index: 1;
+    }
+    header .header-content {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 2;
+      text-align: center;
+      color: var(--light);
+    }
+    header .header-content h1 {
+      font-size: 4rem;
+      margin: 0;
+      letter-spacing: 2px;
+    }
+    header .header-content p {
+      font-size: 1.25rem;
+      margin-top: .5rem;
+    }
+    .section {
+      padding: 60px 20px;
+      max-width: 1000px;
+      margin: auto;
+    }
+    /* Daily Specials */
+    .specials-wrapper {
+      display: grid;
+      grid-template-columns: 3fr 2fr;
+      gap: 40px;
       align-items: center;
     }
-    .menu-item button {
-      padding: 8px 12px;
+    .special-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 20px;
+    }
+    .special-item {
+      text-align: center;
+    }
+    .special-item img {
+      width: 100%;
+      border-radius: 8px;
+      display: block;
+    }
+    .special-item .price {
+      margin-top: 8px;
+      font-weight: bold;
+    }
+    .special-item .name {
+      margin-top: 4px;
+    }
+    .special-info h2 {
+      font-size: 2.5rem;
+      margin-bottom: .5rem;
+      color: var(--primary);
+    }
+    .special-info p {
+      line-height: 1.5;
+    }
+    /* Schedule iframe */
+    #schedule iframe {
+      width: 100%;
+      height: 400px;
       border: none;
-      background: #333;
-      color: #fff;
+      border-radius: 8px;
+    }
+    /* Menu */
+    .menu-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+    }
+    .menu-item {
+      background: #f9f9f9;
+      padding: 20px;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .menu-item h3 {
+      margin: 0 0 10px;
+      font-size: 1.25rem;
+    }
+    .menu-item .order-btn {
+      margin-top: auto;
+      padding: 10px 15px;
+      background: var(--secondary);
+      color: var(--light);
+      border: none;
       border-radius: 4px;
       cursor: pointer;
+      text-decoration: none;
+      text-align: center;
+      font-weight: bold;
+      transition: background .3s;
     }
+    .menu-item .order-btn:hover { background: #13856c; }
   </style>
 </head>
 <body>
-  <div class="image-header">
+  <nav>
+    <a href="#home">Home</a>
+    <a href="#specials">Daily Specials</a>
+    <a href="#schedule">Location &amp; Schedule</a>
+    <a href="#menu">Menu</a>
+    <a href="#contact">Contact</a>
+  </nav>
+
+  <header id="home">
     <div class="overlay"></div>
     <div class="header-content">
       <h1>Taste of Türkiye</h1>
-      <h2>Turkish Food Truck Serving Naples, FL and Collier County, FL</h2>
+      <p>Serving Naples, FL and Collier County, FL</p>
     </div>
-  </div>
+  </header>
 
-  <div class="section" id="schedule">
-    <h2>Our Schedule</h2>
-    <p>Find us at these locations:</p>
-    <!-- Embed Google Sheets or calendar -->
+  <section class="section" id="specials">
+    <div class="specials-wrapper">
+      <div class="special-list">
+        <div class="special-item">
+          <img src="/assets/special1.jpg" alt="Vanilla Ice Cream">
+          <div class="price">$2.50</div>
+          <div class="name">Vanilla Ice Cream</div>
+        </div>
+        <div class="special-item">
+          <img src="/assets/special2.jpg" alt="Mango Milkshake">
+          <div class="price">$3.00</div>
+          <div class="name">Mango Milkshake</div>
+        </div>
+        <div class="special-item">
+          <img src="/assets/special3.jpg" alt="Chocolate Ice Cream">
+          <div class="price">$3.50</div>
+          <div class="name">Chocolate Ice Cream</div>
+        </div>
+        <div class="special-item">
+          <img src="/assets/special4.jpg" alt="Chocolate Milkshake">
+          <div class="price">$3.00</div>
+          <div class="name">Chocolate Milkshake</div>
+        </div>
+      </div>
+      <div class="special-info">
+        <h2>Daily Specials</h2>
+        <p>Our chef’s top picks for today—made fresh every morning. Swing by to taste these limited-time treats before they’re gone!</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="schedule">
+    <h2>Location &amp; Schedule</h2>
     <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTdMqZPmukxvZTx-hCz-0aMQB5Ul86uOzDoABhTZl1zZXoWqgUrTNpUYRFZ5rn0XSKESsEXGAhNFzY-/pubhtml?gid=1188893810&single=true&doc-title=hidden&rm=minimal&chrome=false&headers=false&widget=false&single=true"></iframe>
-  </div>
+  </section>
 
-  <div class="section" id="menu">
-    <h2>Menu</h2>
-    <div class="menu-item">
-      <span>Taco Supreme</span>
-      <button onclick="window.location.href='https://order.example.com/taco'">Order</button>
+  <section class="section" id="menu">
+    <h2>Our Menu</h2>
+    <div class="menu-list">
+      <div class="menu-item">
+        <h3>Taco Supreme</h3>
+        <p>Crispy shell with seasoned beef, lettuce, cheese & salsa.</p>
+        <a class="order-btn" href="https://order.example.com/taco">Order Now</a>
+      </div>
+      <div class="menu-item">
+        <h3>Chicken Wrap</h3>
+        <p>Grilled chicken, fresh veggies & house sauce in a soft tortilla.</p>
+        <a class="order-btn" href="https://order.example.com/wrap">Order Now</a>
+      </div>
+      <!-- Add more menu items here -->
     </div>
-    <div class="menu-item">
-      <span>Chicken Wrap</span>
-      <button onclick="window.location.href='https://order.example.com/wrap'">Order</button>
-    </div>
-    <!-- Add more items as needed -->
-  </div>
+  </section>
+
+  <footer class="section" id="contact">
+    <h2>Contact</h2>
+    <p>Questions? Find us on social or email us at <a href="mailto:info@deliciouseats.com">info@deliciouseats.com</a>.</p>
+  </footer>
 </body>
 </html>
