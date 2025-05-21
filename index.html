@@ -261,32 +261,42 @@
       try {
         const res = await fetch(csvUrl);
         if (!res.ok) throw new Error('Network response was not ok');
-        const text = await res.text();
-        const lines = text.trim().split(/\r?\n/).slice(1);
-        for (const line of lines) {
-          if (!line) continue;
-          const cells = line.split(',');
-          // columns: 0=Day,1=Date,2=Start,3=End,4=Location,5=Public,6+=Address parts
-          const day = cells[0] || '';
-          const date = cells[1] || '';
+        const raw = await res.text();
+        // merge lines inside quoted fields
+        const rows = [];
+        let inQuotes = false;
+        let buffer = '';
+        raw.split(/\r?\n/).forEach(line => {
+          if (inQuotes) {
+            buffer += '\n' + line;
+          } else {
+            buffer = line;
+          }
+          const quoteCount = (line.match(/"/g) || []).length;
+          if (quoteCount % 2 === 1) inQuotes = !inQuotes;
+          if (!inQuotes) {
+            rows.push(buffer);
+          }
+        });
+        const dataLines = rows.slice(1);
+        dataLines.forEach(line => {
+          const cells = line.split(/,(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)/).map(c => c.replace(/^"|"$/g, '').trim());
+          const [day, date, start, end, loc, pub, addressRaw] = cells;
           const formattedDate = `${day}, ${date}`;
-          const start = cells[2] || '';
-          const end = cells[3] || '';
-          const timeRange = start && end ? `${start} to ${end}` : (start || end);
-          const locationName = cells[4] || '';
-          const publicFlag = cells[5] ? ` (${cells[5]})` : '';
-          // Join all remaining parts for address, then strip quotes
-          let address = cells.slice(6).join(',');
-          address = address.replaceAll(/"/gm, '');
+          const timeRange = start && end ? `${start} to ${end}` : (start||end||'');
+          const publicFlag = pub ? ` (${pub})` : '';
+          // split address on newline
+          const [street = '', cityState = ''] = addressRaw.split(/\r?\n/).map(s=>s.trim());
           const entry = document.createElement('div'); entry.className = 'schedule-entry';
           entry.innerHTML = `
             <p class="date">${formattedDate}</p>
             <p class="time">${timeRange}</p>
-            <p class="location"><strong>${locationName}${publicFlag}</strong></p>
-            <p class="address">${address}</p>
+            <p class="location"><strong>${loc}${publicFlag}</strong></p>
+            <p class="address-line">${street}</p>
+            <p class="address-line">${cityState}</p>
           `;
           container.appendChild(entry);
-        }
+        });
       } catch (e) {
         console.error('Schedule load error:', e);
         container.textContent = 'Failed to load schedule.';
