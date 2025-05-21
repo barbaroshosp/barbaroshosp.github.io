@@ -223,9 +223,9 @@
 
   <section class="section" id="schedule">
     <h2>Location &amp; Schedule</h2>
-    <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTdMqZPmukxvZTx-hCz-0aMQB5Ul86uOzDoABhTZl1zZXoWqgUrTNpUYRFZ5rn0XSKESsEXGAhNFzY-/pubhtml?gid=1188893810&single=true&doc-title=hidden&rm=minimal&chrome=false&headers=false&widget=false&single=true"></iframe>
+    <div id="schedule-table">Loading schedule...</div>
   </section>
-
+  
   <section class="section" id="menu">
     <h2>Our Menu</h2>
     <div class="menu-list">
@@ -245,7 +245,39 @@
 
   <footer class="section" id="contact">
     <h2>Contact</h2>
-    <p>Questions? Find us on social or email us at <a href="mailto:info@deliciouseats.com">info@deliciouseats.com</a>.</p>
+    <p>Questions? Find us on social @tasteofturkiyenaples or email us at <a href="mailto:foodtruck@barbaroshospitality.com">foodtruck@barbaroshospitality.com</a>.</p>
   </footer>
+  <script>
+    (async function() {
+      const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTdMqZPmukxvZTx-hCz-0aMQB5Ul86uOzDoABhTZl1zZXoWqgUrTNpUYRFZ5rn0XSKESsEXGAhNFzY-/pub?gid=1188893810&single=true&output=csv';
+      try {
+        const res = await fetch(csvUrl);
+        if (!res.ok) throw new Error('Network response was not ok');
+        const text = await res.text();
+        const lines = text.trim().split('\n');
+        const [headerLine, ...dataLines] = lines;
+        const labels = headerLine.split(/,(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)/).map(h => h.replace(/"/g, ''));
+        const container = document.getElementById('schedule-table');
+        container.innerHTML = '';
+        dataLines.forEach(line => {
+          if (!line.trim()) return;
+          const cells = line.split(/,(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)/).map(c => c.replace(/"/g, ''));
+          const tr = document.createElement('tr');
+          cells.forEach((val, i) => {
+            const td = document.createElement('td');
+            td.className = (i === 0 ? 'label' : 'value');
+            td.textContent = val;
+            // attach label for screen readers
+            td.setAttribute('aria-label', labels[i]);
+            tr.appendChild(td);
+          });
+          container.appendChild(tr);
+        });
+      } catch (e) {
+        console.error('Schedule load error:', e);
+        document.getElementById('schedule-table').textContent = 'Failed to load schedule.';
+      }
+    })();
+  </script>
 </body>
 </html>
