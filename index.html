@@ -176,6 +176,12 @@
       position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
       max-width: 50%; z-index: 2; padding-top: 1%;
     }
+    /* Schedule entry styles */
+    .schedule-entry { border: 1px solid #ccc; border-radius: 8px; background: rgba(255,255,255,0.9); margin-bottom: 1rem; padding: 12px; }
+    .schedule-entry p { margin: 4px 0; line-height: 1.4; font-weight: normal; }
+    .schedule-entry .date { white-space: nowrap; }
+    .schedule-entry .time { font-style: italic; }
+    .schedule-entry .location strong { display: block; font-weight: 700; }
   </style>
 </head>
 <body>
@@ -247,7 +253,7 @@
     <h2>Contact</h2>
     <p>Questions? Find us on social @tasteofturkiyenaples or email us at <a href="mailto:foodtruck@barbaroshospitality.com">foodtruck@barbaroshospitality.com</a>.</p>
   </footer>
-   <script>
+  <script>
     async function loadSchedule() {
       const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTdMqZPmukxvZTx-hCz-0aMQB5Ul86uOzDoABhTZl1zZXoWqgUrTNpUYRFZ5rn0XSKESsEXGAhNFzY-/pub?gid=1518864604&single=true&output=csv';
       const container = document.getElementById('schedule-table');
@@ -259,9 +265,8 @@
         const lines = text.trim().split(/\r?\n/).slice(1);
         for (const line of lines) {
           if (!line) continue;
-          // Simple split by comma since no field contains commas
           const cells = line.split(',');
-          // columns: 0=Day,1=Date,2=Start,3=End,4=Location,5=Public,6=Address
+          // columns: 0=Day,1=Date,2=Start,3=End,4=Location,5=Public,6+=Address parts
           const day = cells[0] || '';
           const date = cells[1] || '';
           const formattedDate = `${day}, ${date}`;
@@ -270,7 +275,9 @@
           const timeRange = start && end ? `${start} to ${end}` : (start || end);
           const locationName = cells[4] || '';
           const publicFlag = cells[5] ? ` (${cells[5]})` : '';
-          const address = cells[6] || '';
+          // Join all remaining parts for address, then strip quotes
+          let address = cells.slice(6).join(',');
+          address = address.replaceAll(/^"|"$/gm, '');
           const entry = document.createElement('div'); entry.className = 'schedule-entry';
           entry.innerHTML = `
             <p class="date">${formattedDate}</p>
