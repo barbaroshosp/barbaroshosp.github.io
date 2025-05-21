@@ -5,22 +5,29 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Taste of Türkiye Food Truck</title>
   <link rel="icon" href="/assets/favicon.png">
+  <!-- Montserrat font -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --primary: #e67e22;
-      --secondary: #16a085;
-      --light: #ffffff;
+      --primary: #e10600;    /* Bright red */
+      --light: #ffffff;      /* White */
       --dark-overlay: rgba(0, 0, 0, 0.4);
     }
     * { box-sizing: border-box; }
     body, html {
       margin: 0;
       padding: 0;
-      font-family: Arial, sans-serif;
+      font-family: 'Montserrat', sans-serif;
       color: #333;
+      background: var(--light);
+    }
+    /* Uppercase, bold headers and nav links */
+    h1, h2, h3, nav a {
+      text-transform: uppercase;
+      font-weight: 700;
     }
     nav {
-      position: absolute;
+      position: fixed;
       top: 0;
       width: 100%;
       display: flex;
@@ -28,33 +35,27 @@
       gap: 2rem;
       padding: 1rem 0;
       background: var(--dark-overlay);
-      z-index: 10;
+      z-index: 100;
     }
     nav a {
       color: var(--light);
       text-decoration: none;
-      font-weight: bold;
       transition: opacity .3s;
     }
     nav a:hover { opacity: .7; }
     header {
       position: relative;
       height: 80vh;
-      background: url('/assets/header-image.jpg') center/cover no-repeat;
-    }
-    header .overlay {
-      position: absolute;
-      inset: 0;
-      background: var(--dark-overlay);
-      z-index: 1;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--light) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding-top: 60px; /* space for nav */
     }
     header .header-content {
-      position: absolute;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      z-index: 2;
       text-align: center;
       color: var(--light);
+      z-index: 1;
     }
     header .header-content h1 {
       font-size: 4rem;
@@ -64,6 +65,8 @@
     header .header-content p {
       font-size: 1.25rem;
       margin-top: .5rem;
+      font-weight: 400;
+      text-transform: none;
     }
     .section {
       padding: 60px 20px;
@@ -84,6 +87,9 @@
     }
     .special-item {
       text-align: center;
+      background: rgba(255,255,255,0.8);
+      border-radius: 8px;
+      padding: 10px;
     }
     .special-item img {
       width: 100%;
@@ -92,7 +98,7 @@
     }
     .special-item .price {
       margin-top: 8px;
-      font-weight: bold;
+      font-weight: 700;
     }
     .special-item .name {
       margin-top: 4px;
@@ -104,6 +110,11 @@
     }
     .special-info p {
       line-height: 1.5;
+      font-weight: 400;
+      text-transform: none;
+      background: rgba(255,255,255,0.8);
+      padding: 20px;
+      border-radius: 8px;
     }
     /* Schedule iframe */
     #schedule iframe {
@@ -111,6 +122,7 @@
       height: 400px;
       border: none;
       border-radius: 8px;
+      background: rgba(255,255,255,0.8);
     }
     /* Menu */
     .menu-list {
@@ -119,7 +131,7 @@
       gap: 20px;
     }
     .menu-item {
-      background: #f9f9f9;
+      background: rgba(255,255,255,0.9);
       padding: 20px;
       border-radius: 8px;
       display: flex;
@@ -133,17 +145,22 @@
     .menu-item .order-btn {
       margin-top: auto;
       padding: 10px 15px;
-      background: var(--secondary);
+      background: var(--primary);
       color: var(--light);
       border: none;
       border-radius: 4px;
       cursor: pointer;
       text-decoration: none;
       text-align: center;
-      font-weight: bold;
       transition: background .3s;
     }
-    .menu-item .order-btn:hover { background: #13856c; }
+    .menu-item .order-btn:hover { background: #c50400; }
+    footer {
+      text-align: center;
+      padding: 40px 20px;
+      background: rgba(255,255,255,0.8);
+      border-top: 1px solid #ccc;
+    }
   </style>
 </head>
 <body>
@@ -156,7 +173,6 @@
   </nav>
 
   <header id="home">
-    <div class="overlay"></div>
     <div class="header-content">
       <h1>Taste of Türkiye</h1>
       <p>Serving Naples, FL and Collier County, FL</p>
