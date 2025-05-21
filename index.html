@@ -249,33 +249,50 @@
   </footer>
   <script>
     (async function() {
-      const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTdMqZPmukxvZTx-hCz-0aMQB5Ul86uOzDoABhTZl1zZXoWqgUrTNpUYRFZ5rn0XSKESsEXGAhNFzY-/pub?gid=1188893810&single=true&output=csv';
+      // Use the published CSV link to access properly formatted columns
+      const csvUrl =
+        'https://docs.google.com/spreadsheets/d/e/2PACX-1vTdMqZPmukxvZTx-hCz-0aMQB5Ul86uOzDoABhTZl1zZXoWqgUrTNpUYRFZ5rn0XSKESsEXGAhNFzY-/pub?gid=1188893810&single=true&output=csv';
+      function getOrdinal(n) {
+        const s = ['th','st','nd','rd'], v = n % 100;
+        return n + (s[(v - 20) % 10] || s[v] || s[0]);
+      }
       try {
         const res = await fetch(csvUrl);
         if (!res.ok) throw new Error('Network response was not ok');
         const text = await res.text();
         const lines = text.trim().split('\n');
-        const [headerLine, ...dataLines] = lines;
-        const labels = headerLine.split(/,(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)/).map(h => h.replace(/"/g, ''));
+        const dataLines = lines.slice(1);
         const container = document.getElementById('schedule-table');
         container.innerHTML = '';
         dataLines.forEach(line => {
           if (!line.trim()) return;
-          const cells = line.split(/,(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)/).map(c => c.replace(/"/g, ''));
-          const tr = document.createElement('tr');
-          cells.forEach((val, i) => {
-            const td = document.createElement('td');
-            td.className = (i === 0 ? 'label' : 'value');
-            td.textContent = val;
-            // attach label for screen readers
-            td.setAttribute('aria-label', labels[i]);
-            tr.appendChild(td);
-          });
-          container.appendChild(tr);
+          const cells = line.split(/,(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)/)
+            .map(c => c.replace(/"/g, '')); // [0]=date, [1]=location, [2]=address, [3]=start, [4]=end, [5]=public
+          const rawDate = cells[0] || '';
+          let formattedDate = rawDate;
+          const dateObj = new Date(rawDate);
+          if (!isNaN(dateObj)) {
+            const wd = dateObj.toLocaleDateString('en-US',{weekday:'long'});
+            const mo = dateObj.toLocaleDateString('en-US',{month:'long'});
+            formattedDate = `${wd}, ${mo} ${getOrdinal(dateObj.getDate())}`;
+          }
+          const timeRange = cells[3] && cells[4] ? `${cells[3]} to ${cells[4]}` : (cells[3]||cells[4]||'');
+          const locationName = cells[1] || '';
+          const publicFlag = cells[5] ? ` (${cells[5]})` : '';
+          const address = cells[2] || '';
+
+          const entry = document.createElement('div'); entry.className='schedule-entry';
+          entry.innerHTML = `
+            <p class="date">${formattedDate}</p>
+            <p class="time">${timeRange}</p>
+            <p class="location"><strong>${locationName}${publicFlag}</strong></p>
+            <p class="address">${address}</p>
+          `;
+          container.appendChild(entry);
         });
-      } catch (e) {
+      } catch(e) {
         console.error('Schedule load error:', e);
-        document.getElementById('schedule-table').textContent = 'Failed to load schedule.';
+        document.getElementById('schedule-table').textContent='Failed to load schedule.';
       }
     })();
   </script>
