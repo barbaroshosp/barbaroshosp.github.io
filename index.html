@@ -248,32 +248,42 @@
     <p>Questions? Find us on social @tasteofturkiyenaples or email us at <a href="mailto:foodtruck@barbaroshospitality.com">foodtruck@barbaroshospitality.com</a>.</p>
   </footer>
  <script>
-    (async function() {
-      const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTdMqZPmukxvZTx-hCz-0aMQB5Ul86uOzDoABhTZl1zZXoWqgUrTNpUYRFZ5rn0XSKESsEXGAhNFzY-/pub?gid=1188893810&single=true&output=csv';
-      function getOrdinal(n) { const s=['th','st','nd','rd'], v=n%100; return n + (s[(v-20)%10]||s[v]||s[0]); }
+    async function loadSchedule() {
+      const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTdMqZPmukxvZTx-hCz-0aMQB5Ul86uOzDoABhTZl1zZXoWqgUrTNpUYRFZ5rn0XSKESsEXGAhNFzY-/pub?gid=1518864604&single=true&output=csv';
+      const container = document.getElementById('schedule-table');
+      container.textContent = '';
       try {
         const res = await fetch(csvUrl);
         if (!res.ok) throw new Error('Network response was not ok');
-        const rows = res.text().then(t => t.trim().split('\n').slice(1));
-        (await rows).forEach(line => {
-          if (!line) return;
-          const cells = line.split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/).map(c=>c.replace(/"/g,''));
-          const raw = cells[0]||'';
-          const d = new Date(raw);
-          const dateStr = !isNaN(d)?`${d.toLocaleDateString('en-US',{weekday:'long'})} ${d.toLocaleDateString('en-US',{month:'long'})} ${getOrdinal(d.getDate())}`:raw;
-          const time = cells[3]&&cells[4]?`${cells[3]} to ${cells[4]}`:cells[3]||cells[4]||'';
-          const loc = cells[1]||'';
-          const flag = cells[5]?` (${cells[5]})`:'';
-          const addr = cells[2]||'';
-          const e = document.createElement('div'); e.className='schedule-entry';
-          e.innerHTML = `<p class="date">${dateStr}</p><p class="time">${time}</p><p class="location"><strong>${loc}${flag}</strong></p><p class="address">${addr}</p>`;
-          document.getElementById('schedule-table').appendChild(e);
-        });
-      } catch(e) {
-        console.error(e);
-        document.getElementById('schedule-table').textContent='Failed to load schedule.';
+        const text = await res.text();
+        const lines = text.trim().split(/\r?\n/).slice(1);
+        for (const line of lines) {
+          if (!line) continue;
+          const cells = line.split(/,(?=(?:[^"]*"[^"]*"[^"]*$)/).map(c => c.replace(/"/g, ''));
+          // columns: 0=Day,1=Date,2=Start,3=End,4=Location,5=Public,6=Address
+          const day = cells[0] || '';
+          const date = cells[1] || '';
+          const formattedDate = `${day}, ${date}`;
+          const timeRange = cells[2] && cells[3] ? `${cells[2]} to ${cells[3]}` : (cells[2]||cells[3]||'');
+          const locationName = cells[4] || '';
+          const publicFlag = cells[5] ? ` (${cells[5]})` : '';
+          const address = cells[6] || '';
+          const entry = document.createElement('div');
+          entry.className = 'schedule-entry';
+          entry.innerHTML = `
+            <p class="date">${formattedDate}</p>
+            <p class="time">${timeRange}</p>
+            <p class="location"><strong>${locationName}${publicFlag}</strong></p>
+            <p class="address">${address}</p>
+          `;
+          container.appendChild(entry);
+        }
+      } catch (e) {
+        console.error('Schedule load error:', e);
+        container.textContent = 'Failed to load schedule.';
       }
-    })();
+    }
+    document.addEventListener('DOMContentLoaded', loadSchedule);
   </script>
 </body>
 </html>
