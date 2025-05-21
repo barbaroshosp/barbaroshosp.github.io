@@ -9,9 +9,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --primary: #e10600;    /* Bright red */
-      --light: #ffffff;      /* White */
-      --dark-overlay: rgba(0, 0, 0, 0.4);
+      --primary: #e10600;
+      --light: #ffffff;
     }
     * { box-sizing: border-box; }
     body, html {
@@ -34,11 +33,11 @@
       justify-content: center;
       gap: 2rem;
       padding: 1rem 0;
-      background: var(--dark-overlay);
+      background: rgba(0, 0, 0, 0.4);
       z-index: 100;
     }
     nav a {
-      color: var(--light);
+      color: #ffffff;
       text-decoration: none;
       transition: opacity .3s;
     }
@@ -46,16 +45,30 @@
     header {
       position: relative;
       height: 80vh;
-      background: linear-gradient(135deg, var(--primary) 0%, var(--light) 100%);
+      background: url('https://drive.google.com/file/d/1BKVizPGTdHifScZAujk-SXMP7NiE5Ppc/preview') center/cover no-repeat;
       display: flex;
       align-items: center;
       justify-content: center;
       padding-top: 60px; /* space for nav */
+      overflow: hidden;
+    }
+    header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      /* vertical gradient overlay: red at top to transparent at bottom */
+      background: linear-gradient(
+        to bottom,
+        rgba(225, 6, 0, 0.6) 0%,
+        rgba(225, 6, 0, 0.0) 100%
+      );
+      z-index: 1;
     }
     header .header-content {
+      position: relative;
       text-align: center;
       color: var(--light);
-      z-index: 1;
+      z-index: 2;
     }
     header .header-content h1 {
       font-size: 4rem;
@@ -110,8 +123,6 @@
     }
     .special-info p {
       line-height: 1.5;
-      font-weight: 400;
-      text-transform: none;
       background: rgba(255,255,255,0.8);
       padding: 20px;
       border-radius: 8px;
@@ -146,7 +157,7 @@
       margin-top: auto;
       padding: 10px 15px;
       background: var(--primary);
-      color: var(--light);
+      color: #ffffff;
       border: none;
       border-radius: 4px;
       cursor: pointer;
@@ -183,22 +194,22 @@
     <div class="specials-wrapper">
       <div class="special-list">
         <div class="special-item">
-          <img src="/assets/special1.jpg" alt="Vanilla Ice Cream">
+          <img src="assets/special1.jpg" alt="Vanilla Ice Cream">
           <div class="price">$2.50</div>
           <div class="name">Vanilla Ice Cream</div>
         </div>
         <div class="special-item">
-          <img src="/assets/special2.jpg" alt="Mango Milkshake">
+          <img src="assets/special2.jpg" alt="Mango Milkshake">
           <div class="price">$3.00</div>
           <div class="name">Mango Milkshake</div>
         </div>
         <div class="special-item">
-          <img src="/assets/special3.jpg" alt="Chocolate Ice Cream">
+          <img src="assets/special3.jpg" alt="Chocolate Ice Cream">
           <div class="price">$3.50</div>
           <div class="name">Chocolate Ice Cream</div>
         </div>
         <div class="special-item">
-          <img src="/assets/special4.jpg" alt="Chocolate Milkshake">
+          <img src="assets/special4.jpg" alt="Chocolate Milkshake">
           <div class="price">$3.00</div>
           <div class="name">Chocolate Milkshake</div>
         </div>
