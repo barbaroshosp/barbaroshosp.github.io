@@ -177,6 +177,7 @@
       max-width: 50%; z-index: 2; padding-top: 1%;
     }
     /* Schedule entry styles */
+    .toggle-btn { margin-bottom: 1rem; padding: 8px 16px; background: var(--primary); color: #fff; border: none; border-radius: 4px; cursor: pointer; }
     .schedule-entry { border: 1px solid #ccc; border-radius: 8px; background: rgba(255,255,255,0.9); margin-bottom: 1rem; padding: 12px; }
     .schedule-entry p { margin: 4px 0; line-height: 1.4; font-weight: normal; }
     .schedule-entry .date { white-space: nowrap; }
@@ -228,7 +229,8 @@
   </section>
 
   <section class="section" id="schedule">
-    <h2>Location &amp; Schedule</h2>
+    <h2>Location & Schedule</h2>
+    <button id="toggle-schedule" class="toggle-btn">Show All Upcoming</button>
     <div id="schedule-table">Loading schedule...</div>
   </section>
   
@@ -253,50 +255,65 @@
     <h2>Contact</h2>
     <p>Questions? Find us on social @tasteofturkiyenaples or email us at <a href="mailto:foodtruck@barbaroshospitality.com">foodtruck@barbaroshospitality.com</a>.</p>
   </footer>
-  <script>
+   <script>
     async function loadSchedule() {
       const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTdMqZPmukxvZTx-hCz-0aMQB5Ul86uOzDoABhTZl1zZXoWqgUrTNpUYRFZ5rn0XSKESsEXGAhNFzY-/pub?gid=1518864604&single=true&output=csv';
       const container = document.getElementById('schedule-table');
-      container.textContent = '';
+      const toggleBtn = document.getElementById('toggle-schedule');
+      let events = [];
+      let showAll = false;
+
+      function renderList(list) {
+        container.innerHTML = '';
+        list.forEach(e => {
+          const entry = document.createElement('div'); entry.className = 'schedule-entry';
+          entry.innerHTML = `
+            <p class="date">${e.formattedDate}</p>
+            <p class="time">${e.timeRange}</p>
+            <p class="location"><strong>${e.locationName}${e.publicFlag}</strong></p>
+            <p class="address-line">${e.street}</p>
+            <p class="address-line">${e.cityState}</p>
+          `;
+          container.appendChild(entry);
+        });
+      }
+
       try {
         const res = await fetch(csvUrl);
         if (!res.ok) throw new Error('Network response was not ok');
         const raw = await res.text();
-        // merge lines inside quoted fields
+        // merge multi-line CSV rows
         const rows = [];
-        let inQuotes = false;
-        let buffer = '';
+        let inQuotes = false, buffer = '';
         raw.split(/\r?\n/).forEach(line => {
-          if (inQuotes) {
-            buffer += '\n' + line;
-          } else {
-            buffer = line;
-          }
-          const quoteCount = (line.match(/"/g) || []).length;
-          if (quoteCount % 2 === 1) inQuotes = !inQuotes;
-          if (!inQuotes) {
-            rows.push(buffer);
-          }
+          buffer += (inQuotes ? '\n' : '') + line;
+          const qc = (line.match(/"/g) || []).length;
+          if (qc % 2 === 1) inQuotes = !inQuotes;
+          if (!inQuotes) { rows.push(buffer); buffer = ''; }
         });
-        const dataLines = rows.slice(1);
-        dataLines.forEach(line => {
-          const cells = line.split(/,(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)/).map(c => c.replace(/^"|"$/g, '').trim());
+        rows.slice(1).forEach(line => {
+          const cells = line.split(/,(?=(?:[^"]*"[^"]*")*[^\"]*$)/).map(c => c.replace(/^"|"$/g, '').trim());
           const [day, date, start, end, loc, pub, addressRaw] = cells;
           const formattedDate = `${day}, ${date}`;
+          const dateObj = new Date(`${date} ${new Date().getFullYear()}`);
           const timeRange = start && end ? `${start} to ${end}` : (start||end||'');
           const publicFlag = pub ? ` (${pub})` : '';
-          // split address on newline
-          const [street = '', cityState = ''] = addressRaw.split(/\r?\n/).map(s=>s.trim());
-          const entry = document.createElement('div'); entry.className = 'schedule-entry';
-          entry.innerHTML = `
-            <p class="date">${formattedDate}</p>
-            <p class="time">${timeRange}</p>
-            <p class="location"><strong>${loc}${publicFlag}</strong></p>
-            <p class="address-line">${street}</p>
-            <p class="address-line">${cityState}</p>
-          `;
-          container.appendChild(entry);
+          const [street='', cityState=''] = addressRaw.split(/\r?\n/).map(s=>s.trim());
+          events.push({ dateObj, formattedDate, timeRange, locationName: loc, publicFlag, street, cityState });
         });
+
+        const today = new Date();
+        const weekAhead = new Date();
+        weekAhead.setDate(today.getDate() + 7);
+        const upcoming = events.filter(e => e.dateObj >= today && e.dateObj <= weekAhead);
+
+        renderList(upcoming);
+        toggleBtn.textContent = 'Show All Upcoming';
+        toggleBtn.onclick = () => {
+          showAll = !showAll;
+          renderList(showAll ? events : upcoming);
+          toggleBtn.textContent = showAll ? 'Show Next 7 Days' : 'Show All Upcoming';
+        };
       } catch (e) {
         console.error('Schedule load error:', e);
         container.textContent = 'Failed to load schedule.';
