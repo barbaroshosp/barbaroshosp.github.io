@@ -277,7 +277,7 @@
           const publicFlag = cells[5] ? ` (${cells[5]})` : '';
           // Join all remaining parts for address, then strip quotes
           let address = cells.slice(6).join(',');
-          address = address.replaceAll(/^"|"$/gm, '');
+          address = address.replaceAll(/"/gm, '');
           const entry = document.createElement('div'); entry.className = 'schedule-entry';
           entry.innerHTML = `
             <p class="date">${formattedDate}</p>
