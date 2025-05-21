@@ -255,71 +255,63 @@
     <h2>Contact</h2>
     <p>Questions? Find us on social @tasteofturkiyenaples or email us at <a href="mailto:foodtruck@barbaroshospitality.com">foodtruck@barbaroshospitality.com</a>.</p>
   </footer>
-   <script>
-    async function loadSchedule() {
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
       const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTdMqZPmukxvZTx-hCz-0aMQB5Ul86uOzDoABhTZl1zZXoWqgUrTNpUYRFZ5rn0XSKESsEXGAhNFzY-/pub?gid=1518864604&single=true&output=csv';
       const container = document.getElementById('schedule-table');
       const toggleBtn = document.getElementById('toggle-schedule');
-      let events = [];
-      let showAll = false;
-
-      function renderList(list) {
-        container.innerHTML = '';
-        list.forEach(e => {
-          const entry = document.createElement('div'); entry.className = 'schedule-entry';
-          entry.innerHTML = `
-            <p class="date">${e.formattedDate}</p>
-            <p class="time">${e.timeRange}</p>
-            <p class="location"><strong>${e.locationName}${e.publicFlag}</strong></p>
-            <p class="address-line">${e.street}</p>
-            <p class="address-line">${e.cityState}</p>
-          `;
-          container.appendChild(entry);
-        });
-      }
-
+      let allEntries = [];
       try {
-        const res = await fetch(csvUrl);
-        if (!res.ok) throw new Error('Network response was not ok');
-        const raw = await res.text();
-        // merge multi-line CSV rows
+        const raw = await fetch(csvUrl).then(r => r.ok ? r.text() : Promise.reject());
+        // stitch quoted multiline rows
         const rows = [];
-        let inQuotes = false, buffer = '';
+        let buffer = '', inQ = false;
         raw.split(/\r?\n/).forEach(line => {
-          buffer += (inQuotes ? '\n' : '') + line;
-          const qc = (line.match(/"/g) || []).length;
-          if (qc % 2 === 1) inQuotes = !inQuotes;
-          if (!inQuotes) { rows.push(buffer); buffer = ''; }
+          buffer += (inQ ? '\n' : '') + line;
+          const qc = (line.match(/"/g)||[]).length;
+          if (qc % 2) inQ = !inQ;
+          if (!inQ) { rows.push(buffer); buffer = ''; }
         });
-        rows.slice(1).forEach(line => {
-          const cells = line.split(/,(?=(?:[^"]*"[^"]*")*[^\"]*$)/).map(c => c.replace(/^"|"$/g, '').trim());
-          const [day, date, start, end, loc, pub, addressRaw] = cells;
-          const formattedDate = `${day}, ${date}`;
+        // skip header
+        const data = rows.slice(1);
+        const today = new Date(), weekAhead = new Date(); weekAhead.setDate(today.getDate()+7);
+        data.forEach(row => {
+          const cells = row.split(/,(?=(?:[^"]*"[^"]*")*[^\"]*$)/).map(c=>c.replace(/^"|"$/g,'').trim());
+          const [day,date,start,end,loc,pub,addressRaw] = cells;
           const dateObj = new Date(`${date} ${new Date().getFullYear()}`);
+          const formattedDate = `${day}, ${date}`;
           const timeRange = start && end ? `${start} to ${end}` : (start||end||'');
-          const publicFlag = pub ? ` (${pub})` : '';
-          const [street='', cityState=''] = addressRaw.split(/\r?\n/).map(s=>s.trim());
-          events.push({ dateObj, formattedDate, timeRange, locationName: loc, publicFlag, street, cityState });
+          const [street='',cityState=''] = addressRaw.split(/\r?\n/).map(s=>s.trim());
+          allEntries.push({ dateObj, formattedDate, timeRange, loc, pub, street, cityState });
         });
-
-        const today = new Date();
-        const weekAhead = new Date();
-        weekAhead.setDate(today.getDate() + 7);
-        const upcoming = events.filter(e => e.dateObj >= today && e.dateObj <= weekAhead);
-
-        renderList(upcoming);
-        toggleBtn.textContent = 'Show All Upcoming';
+        // render
+        function render(filterWeek=true) {
+          container.innerHTML='';
+          allEntries.forEach(e=>{
+            const isFuture = e.dateObj>=today;
+            const isWeek = e.dateObj<=weekAhead;
+            const hide = filterWeek ? !(isFuture && isWeek) : !isFuture;
+            const div = document.createElement('div');
+            div.className = 'schedule-entry' + (hide?' hidden':'');
+            div.innerHTML = `<p class="date">${e.formattedDate}</p>
+                             <p class="time">${e.timeRange}</p>
+                             <p class="location"><strong>${e.loc}${e.pub?` (${e.pub})`:''}</strong></p>
+                             <p class="address-line">${e.street}</p>
+                             <p class="address-line">${e.cityState}</p>`;
+            container.appendChild(div);
+          });
+        }
+        render(true);
+        let showingAll = false;
         toggleBtn.onclick = () => {
-          showAll = !showAll;
-          renderList(showAll ? events : upcoming);
-          toggleBtn.textContent = showAll ? 'Show Next 7 Days' : 'Show All Upcoming';
+          showingAll = !showingAll;
+          render(!showingAll);
+          toggleBtn.textContent = showingAll? 'Show Next 7 Days' : 'Show All Upcoming';
         };
-      } catch (e) {
-        console.error('Schedule load error:', e);
+      } catch {
         container.textContent = 'Failed to load schedule.';
       }
-    }
-    document.addEventListener('DOMContentLoaded', loadSchedule);
+    });
   </script>
 </body>
 </html>
