@@ -37,12 +37,14 @@
       background: rgba(0, 0, 0, 0.4);
       z-index: 100;
     }
+    #nav-links { display: flex; gap: 2rem; }
     nav a {
       color: #ffffff;
       text-decoration: none;
       transition: opacity .3s;
     }
     nav a:hover { opacity: .7; }
+   .nav-toggle { display: none; background: none; border: none; color: #fff; font-size: 2rem; cursor: pointer; }
     header {
       position: relative;
       height: 70vh;
@@ -92,23 +94,10 @@
       margin: auto;
     }
     /* Daily Specials */
-    .specials-wrapper {
-      display: grid;
-      grid-template-columns: 3fr 2fr;
-      gap: 40px;
-      align-items: center;
-    }
-    .special-list {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 20px;
-    }
-    .special-item {
-      text-align: center;
-      background: rgba(255,255,255,0.8);
-      border-radius: 8px;
-      padding: 10px;
-    }
+    .specials-wrapper { display: flex; gap: 2rem; align-items: flex-start; }
+    .special-list { display: flex; flex-direction: column; gap: 1rem; }
+    .special-item img { width: 100%; height: auto; border-radius: 50%; }
+    .special-info { flex: 1; }
     .special-item img {
       width: 100%;
       border-radius: 8px;
@@ -240,6 +229,13 @@
     <a href="#schedule">Location &amp; Schedule</a>
     <a href="#menu">Order Online</a>
     <a href="#contact">Contact</a>
+    <button id="nav-toggle" class="nav-toggle" aria-label="Menu">☰</button>
+    <div id="nav-links">
+      <a href="#home">Home</a>
+      <a href="#schedule">Location & Schedule</a>
+      <a href="#menu">Menu</a>
+      <a href="#contact">Contact</a>
+    </div>
   </nav>
 
   <header id="home">
@@ -304,6 +300,9 @@
     <p>Questions? Find us on social @tasteofturkiyenaples or email us at <a href="mailto:foodtruck@barbaroshospitality.com">foodtruck@barbaroshospitality.com</a>.</p>
   </footer>
   <script>
+    // Navigation toggle
+    const nav = document.querySelector('nav');
+    document.getElementById('nav-toggle').addEventListener('click', () => nav.classList.toggle('open'));
     document.addEventListener('DOMContentLoaded', async () => {
       const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTdMqZPmukxvZTx-hCz-0aMQB5Ul86uOzDoABhTZl1zZXoWqgUrTNpUYRFZ5rn0XSKESsEXGAhNFzY-/pub?gid=1518864604&single=true&output=csv';
       const container = document.getElementById('schedule-table');
