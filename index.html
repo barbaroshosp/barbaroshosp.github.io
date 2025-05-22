@@ -7,6 +7,7 @@
   <link rel="icon" href="/assets/favicon.png">
   <!-- Mulish font -->
   <link href="https://fonts.googleapis.com/css2?family=Mulish:wght@400;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <style>
     :root {
       --primary: #e10600;
@@ -26,7 +27,7 @@
       font-weight: 700;
       letter-spacing: 1.1px;
     }
-    nav {
+    .nav {
       position: fixed;
       top: 0;
       width: 100%;
@@ -36,13 +37,22 @@
       padding: 1rem 0;
       background: rgba(0, 0, 0, 0.4);
       z-index: 100;
+      overflow: hidden;
     }
-    nav a {
+    .nav a {
       color: #ffffff;
       text-decoration: none;
       transition: opacity .3s;
+      float: left;
+      display: block;
+      text-align: center;
+      padding: 14px 16px;
     }
-    nav a:hover { opacity: .7; }
+    .nav a:hover { opacity: .7; }
+
+    .nav .icon {
+      display: none;
+    }
     header {
       position: relative;
       height: 70vh;
@@ -202,6 +212,34 @@
         max-width: 80px;
         height: auto;
       }
+      /* Hamburger menu */
+     .nav a {display: none;}
+     .nav a.icon {
+        float: right;
+        display: block;
+      }
+      .nav {
+      	display: block;
+      }
+    }
+    @media (max-width: 768px) {
+      .nav.responsive {position: relative;}
+      .nav.responsive .icon {
+        position: absolute;
+        right: 0;
+        top: 0;
+      }
+      .nav.responsive a {
+        float: none;
+        display: block;
+        text-align: left;
+      }
+      /* Specials images match info height */
+      .specials-wrapper { display: flex; }
+      .special-list, .special-info { flex: 1; }
+      .special-list { display: flex; flex-direction: column; }
+      .special-item { flex: 1; display: flex; align-items: center; justify-content: center; }
+      .special-item img { height: 100%; width: auto; object-fit: cover; }      
     }
     .truck-image {
       position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
@@ -225,11 +263,14 @@
   </style>
 </head>
 <body>
-  <nav>
+  <nav class = "nav" id="homemenu">
     <a href="#home">Home</a>
     <a href="#schedule">Location &amp; Schedule</a>
     <a href="#menu">Order Online</a>
     <a href="#contact">Contact</a>
+    <a href="javascript:void(0);" class="icon" onclick="myFunction()">
+    <i class="fa fa-bars"></i>
+  </a>
   </nav>
 
   <header id="home">
@@ -294,6 +335,14 @@
     <p>Questions? Find us on social @tasteofturkiyenaples or email us at <a href="mailto:foodtruck@barbaroshospitality.com">foodtruck@barbaroshospitality.com</a>.</p>
   </footer>
   <script>
+  function myFunction() {
+      var x = document.getElementById("homemenu");
+      if (x.className === "nav") {
+        x.className += " responsive";
+      } else {
+        x.className = "nav";
+      }
+    }
     document.addEventListener('DOMContentLoaded', async () => {
       const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTdMqZPmukxvZTx-hCz-0aMQB5Ul86uOzDoABhTZl1zZXoWqgUrTNpUYRFZ5rn0XSKESsEXGAhNFzY-/pub?gid=1518864604&single=true&output=csv';
       const container = document.getElementById('schedule-table');
