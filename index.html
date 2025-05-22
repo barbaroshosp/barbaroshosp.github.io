@@ -202,6 +202,16 @@
         max-width: 80px;
         height: auto;
       }
+      /* Hamburger menu */
+      #nav-links { display: none; flex-direction: column; background: rgba(0,0,0,0.8); position: absolute; top: 60px; right: 20px; padding: 1rem; border-radius: 8px; }
+      nav.open #nav-links { display: flex; }
+      .nav-toggle { display: block; }
+      /* Specials images match info height */
+      .specials-wrapper { display: flex; }
+      .special-list, .special-info { flex: 1; }
+      .special-list { display: flex; flex-direction: column; }
+      .special-item { flex: 1; display: flex; align-items: center; justify-content: center; }
+      .special-item img { height: 100%; width: auto; object-fit: cover; }      
     }
     .truck-image {
       position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
