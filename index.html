@@ -179,20 +179,11 @@
       background: rgba(255,255,255,0.8);
       border-top: 1px solid #ccc;
     }
-    .external-checkout-btn {
-      display: none;
-      background: var(--primary);
-      color: #fff;
-      text-decoration: none;
-      padding: 12px;
-      border-radius: 4px;
-      font-weight: 700;
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    @media (max-width: 895px) {.external-checkout-btn 
-     { display: flex; width: 100%;}
-      .menu-item img { max-width: 80px; height: auto; }
+    /* Menu Button Responsive */
+    .external-menu-btn { display: none; background: var(--primary); color: #fff; text-decoration: none; padding: 12px; border-radius: 4px; font-weight: 700; text-align: center; margin: 0 auto 20px; max-width: 300px; }
+    @media (max-width: 895px) {
+      /* show only button on mobile */
+      .external-menu-btn { display: block; }
     }
     @media (max-width: 768px) {
       /* Hamburger menu */
@@ -213,12 +204,6 @@
     .hidden { display: none; }
     /* Instagram section styling */
     #instagram blockquote { margin: 0 auto; max-width: 700px; width:100%; }
-      /* Modal styles */
-    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); justify-content: center; align-items: center; z-index: 300; }
-    .modal-overlay.open { display: flex; }
-    .modal-content { position: relative; width: 90%; max-width: 800px; height: 90%; background: #fff; border-radius: 8px; overflow: hidden; }
-    .modal-content iframe { width: 100%; height: 100%; border: none; }
-    .modal-close { position: absolute; top: 10px; right: 10px; font-size: 1.5rem; color: #fff; background: rgba(0,0,0,0.5); border: none; border-radius: 50%; width: 32px; height: 32px; cursor: pointer; }
   </style>
 </head>
 <body>
@@ -271,19 +256,8 @@
   
   <section class="section" id="menu">
     <h2>Order Online</h2>
-    <div class="menu-list">
     <iframe src="https://tasteofturkiye.square.site/" style="width:100%; height:800px; border:none;" title="Order Online"></iframe>
-    </div>
   </section>
-  <a href="#" id="open-checkout" class="external-checkout-btn modal">View Order</a>
-  </section>
-  <!-- Modal Overlay -->
-  <div id="checkout-modal" class="modal-overlay">
-    <div class="modal-content">
-      <button class="modal-close" id="close-checkout">&times;</button>
-      <iframe src="https://tasteofturkiye.square.site/s/cart" title="Checkout"></iframe>
-    </div>
-  </div>
   
   <section class="section" id="instagram">
     <h2>Follow on Instagram</h2>
@@ -299,21 +273,6 @@
     <p>Questions? Find us on social @tasteofturkiyenaples or email us at <a href="mailto:foodtruck@barbaroshospitality.com">foodtruck@barbaroshospitality.com</a>.</p>
   </footer>
   <script>
-    // Checkout modal logic
-    const openBtn = document.getElementById('open-checkout');
-    const modal = document.getElementById('checkout-modal');
-    const closeBtn = document.getElementById('close-checkout');
-    openBtn.addEventListener('click', e => {
-      e.preventDefault();
-      modal.classList.add('open');
-    });
-    closeBtn.addEventListener('click', () => {
-      modal.classList.remove('open');
-    });
-    modal.addEventListener('click', e => {
-      if (e.target === modal) modal.classList.remove('open');
-    });
-
     document.addEventListener('DOMContentLoaded', async () => {
       const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTdMqZPmukxvZTx-hCz-0aMQB5Ul86uOzDoABhTZl1zZXoWqgUrTNpUYRFZ5rn0XSKESsEXGAhNFzY-/pub?gid=1518864604&single=true&output=csv';
       const container = document.getElementById('schedule-table');
