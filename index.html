@@ -5,33 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Taste of Türkiye Food Truck</title>
   <link rel="icon" href="/assets/favicon.png">
-  <!-- Montserrat font -->
+  <!-- Mulish font -->
   <link href="https://fonts.googleapis.com/css2?family=Mulish:wght@400;700;900&display=swap" rel="stylesheet">
-  /* Menu responsiveness */
-    .external-menu-btn {
-      display: none;
-      background: var(--primary);
-      color: #fff;
-      text-decoration: none;
-      padding: 12px;
-      border-radius: 4px;
-      font-weight: 700;
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    @media (max-width: 768px) {
-      .menu-list {
-        display: none;
-      }
-      .external-menu-btn {
-        display: block;
-        width: 100%;
-      }
-      .menu-item img {
-        max-width: 80px;
-        height: auto;
-      }
-    }
   <style>
     :root {
       --primary: #e10600;
@@ -203,6 +178,30 @@
       padding: 40px 20px;
       background: rgba(255,255,255,0.8);
       border-top: 1px solid #ccc;
+    }
+    .external-menu-btn {
+      display: none;
+      background: var(--primary);
+      color: #fff;
+      text-decoration: none;
+      padding: 12px;
+      border-radius: 4px;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    @media (max-width: 768px) {
+      .menu-list {
+        display: none;
+      }
+      .external-menu-btn {
+        display: block;
+        width: 100%;
+      }
+      .menu-item img {
+        max-width: 80px;
+        height: auto;
+      }
     }
     .truck-image {
       position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
