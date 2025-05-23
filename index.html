@@ -326,7 +326,7 @@
         function render(filterWeek=true) {
           container.innerHTML='';
           allEntries.forEach(e=>{
-            const isFuture = e.dateObj>=today;
+            const isFuture = e.dateObj>=today-1;
             const isWeek = e.dateObj<=weekAhead;
             const hide = filterWeek ? !(isFuture && isWeek) : !isFuture;
             const div = document.createElement('div');
