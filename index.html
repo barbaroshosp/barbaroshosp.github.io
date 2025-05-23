@@ -211,7 +211,7 @@
     #instagram blockquote { margin: 0 auto; max-width: 700px; width:100%; }
 	.mySlides {display:none;}
     /* Image Carousel (Mobile Menu) */
-    #mobilemenu { position: relative; z-index: 10; max-width: 400px; max-height:300px; margin:auto; overflow:hidden;}
+    #carousel { position: relative; z-index: 10; max-width: 400px; max-height:300px; margin:auto; overflow:hidden;}
     .mySlides { display: none; width: 100%; height: auto; max-height:300px; object-fit:cover; }
     .w3-button { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); color: #fff; border: none; padding: 8px; cursor: pointer; z-index: 11; }
     .w3-display-left { left: 10px; }
@@ -265,12 +265,14 @@
 	<p>Come try our authentic Turkish favorites and our updated versions of the classics. All food is made fresh to order and <strong>handcrafted with love</strong>.</p>
 	<a href="https://tasteofturkiye.square.site/" class="external-menu-btn" target="_blank">Order Online</a>
 	<p style="padding-top: 4%; padding-bottom: 1%;">Dietary restrictions or preferences? Most of our offerings are gluten free. Vegan, dairy-free, onion-free and other allergy-accessible foods available.</p>
-	<img class="mySlides" src="assets/zucchiniplate.png" style="width:100%" alt="Zucchini lavash plate">
-	<img class="mySlides" src="assets/chickenbrioche.png" style="width:100%" alt="Chicken brioche bun">
-	<img class="mySlides" src="assets/adanawrap.png" style="width:100%" alt="Adana wrap">
-	<img class="mySlides" src="assets/filetfries.png" style="width:100%" alt="Filet over fries">
-	<button class="w3-button w3-display-left" onclick="plusDivs(-1)">&#10094;</button>
-	<button class="w3-button w3-display-right" onclick="plusDivs(+1)">&#10095;</button>
+	<div id="carousel">
+		<img class="mySlides" src="assets/zucchiniplate.png" style="width:100%" alt="Zucchini lavash plate">
+		<img class="mySlides" src="assets/chickenbrioche.png" style="width:100%" alt="Chicken brioche bun">
+		<img class="mySlides" src="assets/adanawrap.png" style="width:100%" alt="Adana wrap">
+		<img class="mySlides" src="assets/filetfries.png" style="width:100%" alt="Filet over fries">
+		<button class="w3-button w3-display-left" onclick="plusDivs(-1)">&#10094;</button>
+		<button class="w3-button w3-display-right" onclick="plusDivs(+1)">&#10095;</button>
+	</div>
 </section>
 
 <section class="section" id="schedule">
