@@ -321,7 +321,11 @@
       const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTdMqZPmukxvZTx-hCz-0aMQB5Ul86uOzDoABhTZl1zZXoWqgUrTNpUYRFZ5rn0XSKESsEXGAhNFzY-/pub?gid=1518864604&single=true&output=csv';
       const container = document.getElementById('schedule-table');
       const toggleBtn = document.getElementById('toggle-schedule');
-       let allEntries = [], today = new Date(), weekAhead = new Date();
+      let allEntries = [];
+      const today = new Date();
+      const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+      let weekAhead = new Date(todayStart);
+      weekAhead.setDate(todayStart.getDate() + 7);
       weekAhead.setDate(today.getDate()+7);
       try {
         const raw = await fetch(csvUrl).then(r => r.ok ? r.text() : Promise.reject());
@@ -343,7 +347,7 @@
           container.innerHTML = '';
           const todayStr = today.toDateString();
           allEntries.forEach(e => {
-            const isFuture = e.dateObj >= today-1;
+            const isFuture = e.dateObj >= todayStart;
             const isWeek = e.dateObj <= weekAhead;
             const hide = filterWeek ? !(isFuture && isWeek) : !isFuture;
             const div = document.createElement('div');
