@@ -321,54 +321,45 @@
       const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTdMqZPmukxvZTx-hCz-0aMQB5Ul86uOzDoABhTZl1zZXoWqgUrTNpUYRFZ5rn0XSKESsEXGAhNFzY-/pub?gid=1518864604&single=true&output=csv';
       const container = document.getElementById('schedule-table');
       const toggleBtn = document.getElementById('toggle-schedule');
-      let allEntries = [];
+       let allEntries = [], today = new Date(), weekAhead = new Date();
+      weekAhead.setDate(today.getDate()+7);
       try {
         const raw = await fetch(csvUrl).then(r => r.ok ? r.text() : Promise.reject());
         // stitch quoted multiline rows
-        const rows = [];
-        let buffer = '', inQ = false;
+        const rows = []; let buffer = '', inQ = false;
         raw.split(/\r?\n/).forEach(line => {
           buffer += (inQ ? '\n' : '') + line;
           const qc = (line.match(/"/g)||[]).length;
           if (qc % 2) inQ = !inQ;
           if (!inQ) { rows.push(buffer); buffer = ''; }
         });
-        // Skip header
-        const data = rows.slice(1);
-        const today = new Date(), weekAhead = new Date(); weekAhead.setDate(today.getDate()+7);
-        data.forEach(row => {
-          const cells = row.split(/,(?=(?:[^"]*"[^"]*")*[^\"]*$)/).map(c=>c.replace(/^"|"$/g,'').trim());
+        rows.slice(1).forEach(r => {
+          const cells = r.split(/,(?=(?:[^"]*"[^"]*")*[^\"]*$)/).map(c => c.replace(/^"|"$/g,'').trim());
           const [day,date,start,end,loc,pub,addressRaw] = cells;
           const dateObj = new Date(`${date} ${new Date().getFullYear()}`);
-          const formattedDate = `${day}, ${date}`;
-          const timeRange = start && end ? `${start} to ${end}` : (start||end||'');
-          const [street='',cityState=''] = addressRaw.split(/\r?\n/).map(s=>s.trim());
-          allEntries.push({ dateObj, formattedDate, timeRange, loc, pub, street, cityState });
+          allEntries.push({ dateObj, formattedDate: `${day}, ${date}`, timeRange: start&&end?`${start} to ${end}`:(start||end||''), loc, pub, street: addressRaw.split(/\r?\n/)[0], cityState: addressRaw.split(/\r?\n/)[1] });
         });
-        // render
         function render(filterWeek=true) {
-          container.innerHTML='';
-          allEntries.forEach(e=>{
-            const isFuture = e.dateObj>=today-1;
-            const isWeek = e.dateObj<=weekAhead;
+          container.innerHTML = '';
+          const todayStr = today.toDateString();
+          allEntries.forEach(e => {
+            const isFuture = e.dateObj >= today;
+            const isWeek = e.dateObj <= weekAhead;
             const hide = filterWeek ? !(isFuture && isWeek) : !isFuture;
             const div = document.createElement('div');
-            div.className = 'schedule-entry' + (hide?' hidden':'');
-            div.innerHTML = `<p class="date">${e.formattedDate}</p>
-                             <p class="time">${e.timeRange}</p>
-                             <p class="location"><strong>${e.loc}${e.pub?` (${e.pub})`:''}</strong></p>
-                             <p class="address-line">${e.street}</p>
-                             <p class="address-line">${e.cityState}</p>`;
+            div.className = 'schedule-entry' + (hide ? ' hidden' : '');
+            if (e.dateObj.toDateString() === todayStr) div.classList.add('today');
+            div.innerHTML = `<p class="date">${e.formattedDate}</p><p class="time">${e.timeRange}</p><p class="location"><strong>${e.loc}${e.pub?` (${e.pub})`:''}</strong></p><p class="address-line">${e.street}</p><p class="address-line">${e.cityState}</p>`;
             container.appendChild(div);
           });
         }
         render(true);
-        let showingAll = false;
-        toggleBtn.onclick = () => {
-          showingAll = !showingAll;
-          render(!showingAll);
-          toggleBtn.textContent = showingAll? 'Show Next 7 Days' : 'Show All Upcoming';
-        };
+        let showingWeek = true;
+        toggleBtn.addEventListener('click', () => {
+          showingWeek = !showingWeek;
+          render(showingWeek);
+          toggleBtn.textContent = showingWeek ? 'Show All Upcoming' : 'Show Next 7 Days';
+        });
       } catch {
         container.textContent = 'Failed to load schedule.';
       }
