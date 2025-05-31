@@ -348,31 +348,49 @@
           const dateObj = new Date(`${date} ${new Date().getFullYear()}`);
           allEntries.push({ dateObj, formattedDate: `${day}, ${date}`, timeRange: start&&end?`${start} to ${end}`:(start||end||''), loc, pub, street: addressRaw.split(/\r?\n/)[0], cityState: addressRaw.split(/\r?\n/)[1] });
         });
-        function render(filterWeek=true) {
-          container.innerHTML = '';
-          const todayStr = today.toDateString();
-          allEntries.forEach(e => {
-            const isFuture = e.dateObj >= todayStart;
-            const isWeek = e.dateObj <= weekAhead;
-            const hide = filterWeek ? !(isFuture && isWeek) : !isFuture;
-            const div = document.createElement('div');
-            div.className = 'schedule-entry' + (hide ? ' hidden' : '');
-            if (e.dateObj.toDateString() === todayStr) div.classList.add('today');
-            div.innerHTML = `<p class="date">${e.formattedDate}</p><p class="time">${e.timeRange}</p><p class="location"><strong>${e.loc}${e.pub?` (${e.pub})`:''}</strong></p><p class="address-line">${e.street}</p><p class="address-line">${e.cityState}</p>`;
-            container.appendChild(div);
-          });
-        }
-        render(true);
-        let showingWeek = true;
-        toggleBtn.addEventListener('click', () => {
-          showingWeek = !showingWeek;
-          render(showingWeek);
-          toggleBtn.textContent = showingWeek ? 'Show All Upcoming' : 'Show Next 7 Days';
+        function render(showOnlyWeek = true) {
+        container.innerHTML = '';
+        const todayStr = todayStart.toDateString();
+
+        allEntries.forEach(e => {
+          // e.dateObj >= todayStart means today or future
+          const isFuture = e.dateObj >= todayStart;
+          // e.dateObj < weekAhead means strictly before “today + 7 days”
+          const isWithinWeek = e.dateObj < weekAhead;
+          const hide = showOnlyWeek ? !(isFuture && isWithinWeek) : !isFuture;
+
+          const div = document.createElement('div');
+          div.className = 'schedule-entry' + (hide ? ' hidden' : '');
+
+          // Add green border if this entry’s date equals today
+          if (e.dateObj.toDateString() === todayStr) {
+            div.classList.add('today');
+          }
+
+          div.innerHTML = `<p class="date">${e.formattedDate}</p>
+            <p class="time">${e.timeRange}</p>
+            <p class="location"><strong>${e.loc}${e.pub ? ` (${e.pub})` : ''}</strong></p>
+            <p class="address-line">${e.street}</p>
+            <p class="address-line">${e.cityState}</p>`;
+          container.appendChild(div);
         });
-      } catch {
-        container.textContent = 'Failed to load schedule.';
       }
-    });
-  </script>
+
+      // Initial render: only the next 7 days
+      render(true);
+      let showingWeek = true;
+
+      toggleBtn.addEventListener('click', () => {
+        showingWeek = !showingWeek;
+        render(showingWeek);
+        toggleBtn.textContent = showingWeek
+          ? 'Show All Upcoming'
+          : 'Show Next 7 Days';
+      });
+    } catch {
+      container.textContent = 'Failed to load schedule.';
+    }
+  });
+</script>
 </body>
 </html>
