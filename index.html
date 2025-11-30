@@ -269,8 +269,8 @@
 <body>
 <nav>
 	<a href="#schedule">Truck Schedule</a>
-	<a id="top-order-desktop" class="desktopmenu">Order Online</a>
-	<a id="top-order-mobile" class="mobilemenu">Order Now</a>
+	<a id="top-order-desktop" class="desktopmenu" href="#desktopmenu">Order Online</a>
+	<a id="top-order-mobile" class="mobilemenu" href="#mobilemenu">Order Now</a>
 	<a href="#contact">Contact</a>
 </nav>
 
@@ -449,13 +449,13 @@
 		const topOrderMobile = document.getElementById('top-order-mobile');
 		const topOrderDesktop = document.getElementById('top-order-desktop');
 		
+		// If there is a TODAY event with ordering
 		if (nextEvent && nextEvent.orderLink && nextEvent.dateObj.toDateString() === todayStr) {
-		  // TODAY — direct ordering link
 		  topOrderMobile.href = nextEvent.orderLink;
 		  topOrderDesktop.href = nextEvent.orderLink;
 		} 
+		// If NO event today — use base ordering site
 		else {
-		  // Not today — use general menu
 		  topOrderMobile.href = "https://tasteofturkiye.square.site/";
 		  topOrderDesktop.href = "https://tasteofturkiye.square.site/";
 		}
