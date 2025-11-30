@@ -270,7 +270,7 @@
 <nav>
 	<a href="#schedule">Truck Schedule</a>
 	<a id="top-order-desktop" class="desktopmenu" href="#desktopmenu">Order Online</a>
-	<a id="top-order-mobile" class="mobilemenu" href="#mobilemenu">Order Now</a>
+	<a id="top-order-mobile" class="mobilemenu" target="_blank">Order Now</a>
 	<a href="#contact">Contact</a>
 </nav>
 
@@ -311,7 +311,7 @@
 <section class="section" id="mobilemenu">
 	<h2>Turkish Taste, Global Vision</h2>
 	<p>Come try our authentic Turkish favorites and our updated versions of the classics. All food is made fresh to order and <strong>handcrafted with love</strong>.</p>
-	<a href="https://tasteofturkiye.square.site/" class="external-menu-btn" target="_blank">Order Online</a>
+	<a id="mobile-menu-event-button" class="external-menu-btn" target="_blank">Order Online</a>
 	<p style="padding-top: 4%; padding-bottom: 1%;">Dietary restrictions or preferences? Most of our offerings are gluten free. Vegan, dairy-free, onion-free and other allergy-accessible foods available.</p>
 	<div id="carousel">
 		<img class="mySlides" src="assets/zucchiniplate.png" style="width:100%" alt="Zucchini lavash plate">
@@ -441,97 +441,78 @@
 		  });
 		});
 		
-		function render(showOnlyWeek = true) {
+	  	function render(showOnlyWeek = true) {
 		  container.innerHTML = '';
 		  const todayStr = todayStart.toDateString();
 		
-		let nextEvent = null;
-		const topOrderMobile = document.getElementById('top-order-mobile');
-		const topOrderDesktop = document.getElementById('top-order-desktop');
+		  // Determine the true next upcoming event
+		  let nextEvent = null;
+		  for (const e of allEntries) {
+		    if (e.dateObj >= todayStart) {
+		      if (!nextEvent || e.dateObj < nextEvent.dateObj) {
+		        nextEvent = e;
+		      }
+		    }
+		  }
 		
-		// If there is a TODAY event with ordering
-		if (nextEvent && nextEvent.orderLink && nextEvent.dateObj.toDateString() === todayStr) {
-		  topOrderMobile.href = nextEvent.orderLink;
-		  topOrderDesktop.href = nextEvent.orderLink;
-		} 
-		// If NO event today — use base ordering site
-		else {
-		  topOrderMobile.href = "https://tasteofturkiye.square.site/";
-		  topOrderDesktop.href = "https://tasteofturkiye.square.site/";
-		}
-
-		for (const e of allEntries) {
-			if (e.dateObj >= todayStart) {
-				if (!nextEvent || e.dateObj < nextEvent.dateObj) {
-					nextEvent = e;
-				}
-			}
-		}
-		const header = document.getElementById('order-header');
-		const iframe = document.getElementById('order-iframe');
+		  const header = document.getElementById('order-header');
+		  const iframe = document.getElementById('order-iframe');
+		  const topOrderMobile = document.getElementById('top-order-mobile');
+		  const mobileMenuBtn = document.getElementById('mobile-menu-event-button');
 		
-		if (nextEvent &&
-		nextEvent.orderLink &&
-		nextEvent.orderLink.trim() !== "" &&
-		nextEvent.dateObj.toDateString() === todayStr) {
+		  // DESKTOP behavior (unchanged)
+		  if (nextEvent && nextEvent.orderLink && nextEvent.dateObj.toDateString() === todayStr) {
+		    header.textContent = `Order Online at ${nextEvent.loc}`;
+		    iframe.src = nextEvent.orderLink;
+		  } else {
+		    header.textContent = 'Order Online';
+		    iframe.src = 'https://tasteofturkiye.square.site/';
+		  }
 		
-			header.textContent = `Order Online at ${nextEvent.loc}`;
-			iframe.src = nextEvent.orderLink;
+		  // MOBILE behavior (corrected)
+		  if (nextEvent && nextEvent.orderLink && nextEvent.dateObj.toDateString() === todayStr) {
+		    // Event is today → use event link
+		    topOrderMobile.href = nextEvent.orderLink;
+		    mobileMenuBtn.href = nextEvent.orderLink;
+		  } else {
+		    // No event today → use generic
+		    topOrderMobile.href = "https://tasteofturkiye.square.site/";
+		    mobileMenuBtn.href = "https://tasteofturkiye.square.site/";
+		  }
 		
-		} else {
+		  // Render schedule cards visually
+		  allEntries.forEach(e => {
+		    const isFuture = e.dateObj >= todayStart;
+		    const isWithinSixDays = e.dateObj <= sixDaysAhead;
+		    const hide = showOnlyWeek ? !(isFuture && isWithinSixDays) : !isFuture;
 		
-			header.textContent = 'Order Online';
-			iframe.src = 'https://tasteofturkiye.square.site/';
-		}
-
-		allEntries.forEach(e => {
-			const isFuture = e.dateObj >= todayStart;
-			const isWithinSixDays = e.dateObj <= sixDaysAhead;
-			const hide = showOnlyWeek ? !(isFuture && isWithinSixDays) : !isFuture;
-			const div = document.createElement('div');
-
-			// TODAY — highlight
-			if (e.dateObj.toDateString() === todayStr) {
-			  div.className = 'schedule-entry today';
-			} 
-			
-			// Within next 6 days — no highlight
-			else if (e.dateObj.getTime() > todayStart.getTime() &&
-			         e.dateObj.getTime() <= sixDaysAhead.getTime()) {
-			  div.className = 'schedule-entry' + (hide ? ' hidden' : '');
-			}
-			
-			// >6 days — no highlight
-			else {
-			  div.className = 'schedule-entry' + (hide ? ' hidden' : '');
-			}
-			let html = `
-			  <p class="date">${e.formattedDate}</p>
-			  <p class="time">${e.timeRange}</p>
-			  <p class="location"><strong>${e.loc}${e.pub ? ` (${e.pub})` : ''}</strong></p>
-			  <p class="address-line">${e.street}</p>
-			  <p class="address-line">${e.cityState}</p>
-			`;
+		    const div = document.createElement('div');
 		
-			// TODAY → ORDER NOW
-			if (e.dateObj.toDateString() === todayStr && e.orderLink) {
-			  html += `<a href="${e.orderLink}" target="_blank" class="order-now-btn">Order Now</a>`;
-			}
-			
-			// Within 6 days — but not today → PREORDER
-			else if (e.dateObj.getTime() > todayStart.getTime() &&
-					 e.dateObj.getTime() <= sixDaysAhead.getTime() &&
-					 e.orderLink) {
-			  html += `<a href="${e.orderLink}" target="_blank" class="order-now-btn">Preorder</a>`;
-			}
-
-			// More than 6 days away → NO BUTTON
-
+		    if (e.dateObj.toDateString() === todayStr) {
+		      div.className = 'schedule-entry today';
+		    } else {
+		      div.className = 'schedule-entry' + (hide ? ' hidden' : '');
+		    }
 		
-			div.innerHTML = html;
-			container.appendChild(div);
+		    let html = `
+		      <p class="date">${e.formattedDate}</p>
+		      <p class="time">${e.timeRange}</p>
+		      <p class="location"><strong>${e.loc}${e.pub ? ` (${e.pub})` : ''}</strong></p>
+		      <p class="address-line">${e.street}</p>
+		      <p class="address-line">${e.cityState}</p>
+		    `;
+		
+		    if (e.dateObj.toDateString() === todayStr && e.orderLink) {
+		      html += `<a href="${e.orderLink}" target="_blank" class="order-now-btn">Order Now</a>`;
+		    } else if (isWithinSixDays && e.dateObj > todayStart && e.orderLink) {
+		      html += `<a href="${e.orderLink}" target="_blank" class="order-now-btn">Preorder</a>`;
+		    }
+		
+		    div.innerHTML = html;
+		    container.appendChild(div);
 		  });
 		}
+
       // Initial render: only the next 7 days
       render(true);
       let showingWeek = true;
