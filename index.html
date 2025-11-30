@@ -269,8 +269,8 @@
 <body>
 <nav>
 	<a href="#schedule">Truck Schedule</a>
-	<a href="#desktopmenu" class="desktopmenu">Order Online</a>
-	<a href="#mobilemenu" class="mobilemenu">Order Now</a>
+	<a id="top-order-desktop" class="desktopmenu">Order Online</a>
+	<a id="top-order-mobile" class="mobilemenu">Order Now</a>
 	<a href="#contact">Contact</a>
 </nav>
 
@@ -445,37 +445,49 @@
 		  container.innerHTML = '';
 		  const todayStr = todayStart.toDateString();
 		
-		  let nextEvent = null;
-		  for (const e of allEntries) {
+		let nextEvent = null;
+		const topOrderMobile = document.getElementById('top-order-mobile');
+		const topOrderDesktop = document.getElementById('top-order-desktop');
+		
+		if (nextEvent && nextEvent.orderLink && nextEvent.dateObj.toDateString() === todayStr) {
+		  // TODAY — direct ordering link
+		  topOrderMobile.href = nextEvent.orderLink;
+		  topOrderDesktop.href = nextEvent.orderLink;
+		} 
+		else {
+		  // Not today — use general menu
+		  topOrderMobile.href = "https://tasteofturkiye.square.site/";
+		  topOrderDesktop.href = "https://tasteofturkiye.square.site/";
+		}
+
+		for (const e of allEntries) {
 			if (e.dateObj >= todayStart) {
-			  if (!nextEvent || e.dateObj < nextEvent.dateObj) {
-				nextEvent = e;
-			  }
+				if (!nextEvent || e.dateObj < nextEvent.dateObj) {
+					nextEvent = e;
+				}
 			}
-		  }
-		  const header = document.getElementById('order-header');
-		  const iframe = document.getElementById('order-iframe');
+		}
+		const header = document.getElementById('order-header');
+		const iframe = document.getElementById('order-iframe');
 		
-		  if (nextEvent &&
-			nextEvent.orderLink &&
-			nextEvent.orderLink.trim() !== "" &&
-			nextEvent.dateObj.toDateString() === todayStr) {
+		if (nextEvent &&
+		nextEvent.orderLink &&
+		nextEvent.orderLink.trim() !== "" &&
+		nextEvent.dateObj.toDateString() === todayStr) {
 		
-		  header.textContent = `Order Online at ${nextEvent.loc}`;
-		  iframe.src = nextEvent.orderLink;
+			header.textContent = `Order Online at ${nextEvent.loc}`;
+			iframe.src = nextEvent.orderLink;
 		
 		} else {
 		
-		  header.textContent = 'Order Online';
-		  iframe.src = 'https://tasteofturkiye.square.site/';
-		
+			header.textContent = 'Order Online';
+			iframe.src = 'https://tasteofturkiye.square.site/';
 		}
 
-		  allEntries.forEach(e => {
+		allEntries.forEach(e => {
 			const isFuture = e.dateObj >= todayStart;
 			const isWithinSixDays = e.dateObj <= sixDaysAhead;
 			const hide = showOnlyWeek ? !(isFuture && isWithinSixDays) : !isFuture;
-		
 			const div = document.createElement('div');
 
 			// TODAY — highlight
