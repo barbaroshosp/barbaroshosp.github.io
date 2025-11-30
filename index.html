@@ -143,21 +143,26 @@
       background: rgba(255,255,255,0.8);
     }
 	.schedule-entry.next-event {
-	  border: 4px solid var(--primary);
-	  background: #fff4f4;
+	  border: 4px solid #00c851;  /* GREEN */
+	  background: #e8ffec;       /* very light green */
 	  transform: scale(1.04);
 	  box-shadow: 0px 2px 12px rgba(0,0,0,0.08);
 	}
+	
 	.schedule-entry.next-event::before {
-	  content: 'NEXT EVENT';
+	  content: 'UPCOMING';  
 	  position: absolute;
 	  top: -10px;
 	  left: 10px;
-	  background: var(--primary);
+	  background: #00c851; 
 	  color: white;
 	  padding: 4px 8px;
 	  font-size: 0.7rem;
 	  border-radius: 4px;
+	}
+	
+	.schedule-entry.next-event.today-flag::before {
+	  content: 'TODAY';
 	}
 	.order-now-btn {
 	  display: inline-block;
@@ -361,8 +366,9 @@
       let allEntries = [];
       const today = new Date();
       const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-      let weekAhead = new Date(todayStart);
-      weekAhead.setDate(todayStart.getDate() + 7);
+	  let sixDaysAhead = new Date(todayStart);
+	  sixDaysAhead.setDate(todayStart.getDate() + 6);
+
       try {
         const raw = await fetch(csvUrl).then(r => r.ok ? r.text() : Promise.reject());
         // stitch quoted multiline rows
@@ -405,21 +411,32 @@
 		
 		  allEntries.forEach(e => {
 			const isFuture = e.dateObj >= todayStart;
-			const isWithinWeek = e.dateObj < weekAhead;
-			const hide = showOnlyWeek ? !(isFuture && isWithinWeek) : !isFuture;
+			const isWithinSixDays = e.dateObj <= sixDaysAhead;
+			const hide = showOnlyWeek ? !(isFuture && isWithinSixDays) : !isFuture;
 		
 			const div = document.createElement('div');
-		
-			if (nextEvent === e) {
-			  div.className = 'schedule-entry next-event';
-			} else {
+			// Is today?
+			if (e.dateObj.toDateString() === todayStr) {
+			  div.className = 'schedule-entry today';
+			}
+			
+			// Within next 6 days (but not today)
+			else if (e.dateObj.getTime() > todayStart.getTime() &&
+			         e.dateObj.getTime() <= sixDaysAhead.getTime()) {
+			
+			  // If this is literally the soonest upcoming event
+			  if (e === nextEvent) {
+			    div.className = 'schedule-entry next-event today-flag'; // TODAY overrides label change
+			  } else {
+			    div.className = 'schedule-entry next-event';
+			  }
+			}
+			
+			// Otherwise — event is more than 6 days away
+			else {
 			  div.className = 'schedule-entry' + (hide ? ' hidden' : '');
 			}
-		
-			if (e.dateObj.toDateString() === todayStr) {
-			  div.classList.add('today');
-			}
-		
+
 			let html = `
 			  <p class="date">${e.formattedDate}</p>
 			  <p class="time">${e.timeRange}</p>
@@ -428,9 +445,21 @@
 			  <p class="address-line">${e.cityState}</p>
 			`;
 		
-			if (nextEvent === e && e.orderLink) {
-			  html += `<a href="${e.orderLink}" target="_blank" class="order-now-btn">ORDER NOW</a>`;
+			// TODAY → ORDER NOW
+			if (e.dateObj.toDateString() === todayStr && e.orderLink) {
+			  html += `<a href="${e.orderLink}" target="_blank" class="order-now-btn">Order Now</a>`;
 			}
+			
+			// Within 6 days — but not today → PREORDER
+			else if (e.dateObj.getTime() > todayStart.getTime() 
+			      && e.dateObj.getTime() <= sixDaysAhead.getTime() 
+			      && e.orderLink) 
+			{
+			  html += `<a href="${e.orderLink}" target="_blank" class="order-now-btn">Preorder</a>`;
+			}
+			
+			// More than 6 days away → NO BUTTON
+
 		
 			div.innerHTML = html;
 			container.appendChild(div);
