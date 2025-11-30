@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Blog | Taste of Türkiye</title>
+  <link rel="icon" href="/assets/favicon.png">
+  <link href="https://fonts.googleapis.com/css2?family=Mulish:wght@400;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css"> <!-- reuse existing styles if separated -->
+  <style>
+    .blog-container {
+      padding: 60px 20px;
+      max-width: 900px;
+      margin: auto;
+    }
+    .blog-post-card {
+      border-radius: 8px;
+      padding: 20px;
+      border: 1px solid #ddd;
+      margin-bottom: 24px;
+      cursor: pointer;
+      transition: background .2s;
+    }
+    .blog-post-card:hover {
+      background:#fafafa;
+    }
+    .blog-post-card h3 {
+      margin-top:0;
+      margin-bottom:8px;
+      font-size:1.4rem;
+      text-transform:none;
+    }
+    .blog-post-card .meta {
+      color:#777;
+      font-size:.9rem;
+      margin-bottom:10px;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="/#schedule">Truck Schedule</a>
+    <a href="/#desktopmenu" class="desktopmenu">Order Online</a>
+    <a href="/#contact">Contact</a>
+    <a href="/blog.html">Blog</a>
+  </nav>
+
+  <section class="blog-container">
+    <h1>Blog</h1>
+
+    <!-- hard-coded posts for now -->
+    <div class="blog-post-card">
+      <h3>How We Make Authentic Adana Kebab</h3>
+      <div class="meta">Posted Oct 2025</div>
+      <p>We use our family recipe, hand minced meat, Turkish pepper flakes...</p>
+    </div>
+
+    <div class="blog-post-card">
+      <h3>What Makes Lavash Different from Pita?</h3>
+      <div class="meta">Posted Oct 2025</div>
+      <p>Lavash has a softer texture and warmer flavor profile...</p>
+    </div>
+
+  </section>
+</body>
+</html>
