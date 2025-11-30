@@ -317,10 +317,10 @@
 </section>
 
 <section class="section" id="desktopmenu">
-	<h2>Order Online</h2>
-	<div class="menu-list">
-		<iframe src="https://tasteofturkiye.square.site/" title="Order Online"></iframe>
-	</div>
+  <h2 id="order-header">Order Online</h2>
+  <div class="menu-list">
+    <iframe id="order-iframe" src="https://tasteofturkiye.square.site/" title="Order Online"></iframe>
+  </div>
 </section>
 
 <section class="section" id="instagram">
@@ -401,7 +401,16 @@
 			  }
 			}
 		  }
+		  const header = document.getElementById('order-header');
+		  const iframe = document.getElementById('order-iframe');
 		
+		  if (nextEvent && nextEvent.orderLink) {
+		  	header.textContent = `Order Online at ${nextEvent.loc}`;
+		 	 iframe.src = nextEvent.orderLink;
+		  } else {
+		 	 header.textContent = 'Order Online';
+		  	iframe.src = 'https://tasteofturkiye.square.site/';
+		  }
 		  allEntries.forEach(e => {
 			const isFuture = e.dateObj >= todayStart;
 			const isWithinSixDays = e.dateObj <= sixDaysAhead;
